@@ -35,6 +35,7 @@ public class Player_Controller : MonoBehaviour
         bool leftPressed = Input.GetKey(KeyCode.A);
         bool shiftPressed = Input.GetKey(KeyCode.LeftShift);
 
+        //Velocity Changes
         ChangeVelocity(forwardPressed, shiftPressed, leftPressed, rightPressed);
         ResetVelocity(forwardPressed, shiftPressed, leftPressed, rightPressed);
 
