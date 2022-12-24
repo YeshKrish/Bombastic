@@ -11,6 +11,10 @@ public class Player_Controller : MonoBehaviour
 
     public float acceleration = 2.0f;
     public float deceleration = 2.0f;
+    public float maximumWalkVelocity = 0.5f;
+    public float maximumRunVelocity = 2.0f;   
+    public float maximumWalkStrafeVelocity = 0.5f;
+    public float maximumRunStrafeVelocity = 2.0f;
 
     int VelocityXHash;
     int VelocityZHash;
@@ -26,13 +30,23 @@ public class Player_Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool forwardPressed = Input.GetKey("w");
-        bool rightPressed = Input.GetKey("d");
-        bool leftPressed = Input.GetKey("a");
-        bool shiftPressed = Input.GetKey("left shift");
+        bool forwardPressed = Input.GetKey(KeyCode.W);
+        bool rightPressed = Input.GetKey(KeyCode.D);
+        bool leftPressed = Input.GetKey(KeyCode.A);
+        bool shiftPressed = Input.GetKey(KeyCode.LeftShift);
+
+        ChangeVelocity(forwardPressed, shiftPressed, leftPressed, rightPressed);
+        ResetVelocity(forwardPressed, shiftPressed, leftPressed, rightPressed);
+
+        animator.SetFloat(VelocityXHash, _velocityx);
+        animator.SetFloat(VelocityZHash, _velocityz);
+    }
+
+    void ChangeVelocity(bool forwardPressed, bool shiftPressed, bool leftPressed, bool rightPressed)
+    {
 
         //Transition from Idle to Walk
-        if (forwardPressed && _velocityz < 0.5f && !shiftPressed)
+        if (forwardPressed && _velocityz < maximumWalkVelocity && !shiftPressed)
         {
             _velocityz += Time.deltaTime * acceleration;
         }
@@ -42,60 +56,50 @@ public class Player_Controller : MonoBehaviour
         {
             _velocityz -= Time.deltaTime * deceleration;
         }
-
-        //Reset Velocities
-        if (!forwardPressed && _velocityz < 0.0f && !shiftPressed)
-        {
-            _velocityz = 0.0f;
-        }    
-        if(forwardPressed && shiftPressed && _velocityz > 2.0f)
-        {
-            _velocityz = 2.0f;
-        }
-        
         //Transition from Run to Walk
-        if(forwardPressed && !shiftPressed && _velocityz >= 0.5f)
+        if (forwardPressed && !shiftPressed && _velocityz >= maximumWalkVelocity)
         {
             _velocityz -= Time.deltaTime * deceleration;
         }
 
         //Run
-        if (forwardPressed && _velocityz < 2.0f && shiftPressed)
+        if (forwardPressed && _velocityz < maximumRunVelocity && shiftPressed)
         {
             _velocityz += Time.deltaTime * acceleration;
         }
-        
+
         //Right Strafe
-        if (rightPressed && _velocityx < 0.5f && !leftPressed && !shiftPressed)
+        if (rightPressed && _velocityx < maximumWalkStrafeVelocity && !leftPressed && !shiftPressed)
         {
             _velocityx += Time.deltaTime * acceleration;
         }
+
         //Right Strafe run
-        if (rightPressed && _velocityx < 2.0f && !leftPressed && shiftPressed)
+        if (rightPressed && _velocityx < maximumRunStrafeVelocity && !leftPressed && shiftPressed)
         {
             _velocityx += Time.deltaTime * acceleration;
         }
 
         //Right Strafe run To Right Strafe
-        if (rightPressed && _velocityx >= 0.5f && !shiftPressed)
+        if (rightPressed && _velocityx >= maximumWalkStrafeVelocity && !shiftPressed)
         {
             _velocityx -= Time.deltaTime * deceleration;
         }
-      
 
         //Left Strafe
-        if (leftPressed && _velocityx > -0.5f && !rightPressed && !shiftPressed)
+        if (leftPressed && _velocityx > -maximumWalkStrafeVelocity && !rightPressed && !shiftPressed)
         {
             _velocityx -= Time.deltaTime * acceleration;
         }
+
         //Left Strafe run
-        if (leftPressed && _velocityx > -2.0f && !rightPressed && shiftPressed)
+        if (leftPressed && _velocityx > -maximumRunStrafeVelocity && !rightPressed && shiftPressed)
         {
             _velocityx -= Time.deltaTime * acceleration;
         }
 
         //Left Strafe run To Left Strafe
-        if (leftPressed &&  _velocityx <= -0.5f && !shiftPressed)
+        if (leftPressed && _velocityx <= -maximumWalkStrafeVelocity && !shiftPressed)
         {
             _velocityx += Time.deltaTime * deceleration;
         }
@@ -109,22 +113,34 @@ public class Player_Controller : MonoBehaviour
         {
             _velocityx += Time.deltaTime * deceleration;
         }
+    }
+
+    void ResetVelocity(bool forwardPressed, bool shiftPressed, bool leftPressed, bool rightPressed)
+    {
 
         //Reset Velocities
-        if (leftPressed && _velocityx < -2.0f)
+        if (!forwardPressed && _velocityz < 0.0f && !shiftPressed)
         {
-            _velocityx = -2.0f;
+            _velocityz = 0.0f;
         }
-        if (rightPressed && _velocityx > 2.0f)
+        if (forwardPressed && shiftPressed && _velocityz > maximumRunVelocity)
         {
-            _velocityx = 2.0f;
+            _velocityz = maximumRunVelocity;
+        }
+
+        //Reset Velocities
+        if (leftPressed && _velocityx < -maximumRunStrafeVelocity)
+        {
+            _velocityx = -maximumRunStrafeVelocity;
+        }
+        if (rightPressed && _velocityx > maximumRunStrafeVelocity)
+        {
+            _velocityx = maximumRunStrafeVelocity;
         }
         if (!leftPressed && _velocityx != 0.0f && !rightPressed && (_velocityx < 0.05 && _velocityx > -0.05))
         {
             _velocityx = 0.0f;
         }
-
-        animator.SetFloat(VelocityXHash, _velocityx);
-        animator.SetFloat(VelocityZHash, _velocityz);
     }
+
 }
