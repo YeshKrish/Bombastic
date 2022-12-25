@@ -37,7 +37,7 @@ public class Player_Controller : MonoBehaviour
 
         //Velocity Changes
         ChangeVelocity(forwardPressed, shiftPressed, leftPressed, rightPressed);
-        ResetVelocity(forwardPressed, shiftPressed, leftPressed, rightPressed);
+        LockAndResetVelocity(forwardPressed, shiftPressed, leftPressed, rightPressed);
 
         animator.SetFloat(VelocityXHash, _velocityx);
         animator.SetFloat(VelocityZHash, _velocityz);
@@ -116,7 +116,7 @@ public class Player_Controller : MonoBehaviour
         }
     }
 
-    void ResetVelocity(bool forwardPressed, bool shiftPressed, bool leftPressed, bool rightPressed)
+    void LockAndResetVelocity(bool forwardPressed, bool shiftPressed, bool leftPressed, bool rightPressed)
     {
 
         //Reset Velocities
@@ -124,12 +124,18 @@ public class Player_Controller : MonoBehaviour
         {
             _velocityz = 0.0f;
         }
+        
+        //Lock Velocities
         if (forwardPressed && shiftPressed && _velocityz > maximumRunVelocity)
         {
             _velocityz = maximumRunVelocity;
         }
+        if(forwardPressed && !shiftPressed && (_velocityz <= 0.5 && _velocityz >= 0.48))
+        {
+            _velocityz = maximumWalkVelocity;
+        }
 
-        //Reset Velocities
+        //Lock Velocities
         if (leftPressed && _velocityx < -maximumRunStrafeVelocity)
         {
             _velocityx = -maximumRunStrafeVelocity;
@@ -138,6 +144,16 @@ public class Player_Controller : MonoBehaviour
         {
             _velocityx = maximumRunStrafeVelocity;
         }
+        if (rightPressed && !shiftPressed && (_velocityx <= 0.5 && _velocityx >= 0.48))
+        {
+            _velocityx = maximumWalkVelocity;
+        }
+        if (leftPressed && !shiftPressed && (_velocityx >= -0.5 && _velocityx <= -0.48))
+        {
+            _velocityx = -maximumWalkVelocity;
+        }
+
+        //Resset Velocities
         if (!leftPressed && _velocityx != 0.0f && !rightPressed && (_velocityx < 0.05 && _velocityx > -0.05))
         {
             _velocityx = 0.0f;
