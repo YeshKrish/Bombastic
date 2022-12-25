@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player_Controller : MonoBehaviour
 {
+    //Player Animation Input Variables
     Animator animator;
 
     float _velocityx = 0.0f;
@@ -19,12 +20,27 @@ public class Player_Controller : MonoBehaviour
     int VelocityXHash;
     int VelocityZHash;
 
+    //Player Movement Input Variables
+    [Header("References")]
+    public Transform orientation;
+    public Transform player;
+    public Transform playerObj;
+    public Rigidbody rb;
+
+    public float RotationSpeed;
+
+    float _hInput;
+    float _vInput;
+
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
         VelocityXHash = Animator.StringToHash("VelocityX");
         VelocityZHash = Animator.StringToHash("VelocityZ");
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
@@ -41,6 +57,20 @@ public class Player_Controller : MonoBehaviour
 
         animator.SetFloat(VelocityXHash, _velocityx);
         animator.SetFloat(VelocityZHash, _velocityz);
+
+        //Player Movement
+        Vector3 viewDir = player.position - new Vector3(transform.position.x, player.position.y, transform.position.z);
+        orientation.forward = viewDir.normalized;
+
+        _hInput = Input.GetAxis("Horizontal");
+        _vInput = Input.GetAxis("Vertical");
+
+        Vector3 inputDir = orientation.forward * _vInput + orientation.right * _hInput;
+
+        if(inputDir != Vector3.zero)
+        {
+            playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * RotationSpeed);
+        }
     }
 
     void ChangeVelocity(bool forwardPressed, bool shiftPressed, bool leftPressed, bool rightPressed)
