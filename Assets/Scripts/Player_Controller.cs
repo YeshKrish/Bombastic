@@ -9,6 +9,7 @@ public class Player_Controller : MonoBehaviour
 
     float _velocityx = 0.0f;
     float _velocityz = 0.0f;
+    float _velocityy = 0.0f;
 
     public float acceleration = 2.0f;
     public float deceleration = 2.0f;
@@ -20,12 +21,15 @@ public class Player_Controller : MonoBehaviour
     int VelocityXHash;
     int VelocityZHash;
 
+    int JumpingHash;
+
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
         VelocityXHash = Animator.StringToHash("VelocityX");
         VelocityZHash = Animator.StringToHash("VelocityZ");
+        //JumpingHash = Animator.StringToHash("isJumping");
     }
 
     // Update is called once per frame
@@ -35,6 +39,7 @@ public class Player_Controller : MonoBehaviour
         bool rightPressed = Input.GetKey(KeyCode.D);
         bool leftPressed = Input.GetKey(KeyCode.A);
         bool shiftPressed = Input.GetKey(KeyCode.LeftShift);
+        //bool spacePressed = Input.GetKey(KeyCode.Space);
 
         //Velocity Changes
         ChangeVelocity(forwardPressed, shiftPressed, leftPressed, rightPressed);
@@ -42,6 +47,11 @@ public class Player_Controller : MonoBehaviour
 
         animator.SetFloat(VelocityXHash, _velocityx);
         animator.SetFloat(VelocityZHash, _velocityz);
+
+        //if (spacePressed)
+        //{
+        //    animator.SetBool(JumpingHash, true);
+        //}
     }
 
     void ChangeVelocity(bool forwardPressed, bool shiftPressed, bool leftPressed, bool rightPressed)
